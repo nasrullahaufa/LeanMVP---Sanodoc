@@ -1,13 +1,15 @@
 import Navbar from "../components/Navbar";
 import React, { useState } from "react";
-
+import { useDispatch, useSelector } from "react-redux";
 function HomePage() {
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
+  const loading = useSelector((state) => state.loading);
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-
+  const tes = useSelector((state) => state.tes);
+  const dispatch = useDispatch();
   const uploadHandle = (event) => {
       event.preventDefault();
       console.log(selectedFile)
@@ -17,9 +19,9 @@ function HomePage() {
       <Navbar />
 
       <div className="table-container">
-        <div class="Row">
+        <div classname="Row">
           <input
-            class="Column"
+            classname="Column"
             type="file"
             name="file"
             accept=".pdf"
@@ -34,7 +36,7 @@ function HomePage() {
         </div>
    
 
-        <table class="table table-bordered">
+        <table classname="table table-bordered">
           <thead>
             <tr>
               <th scope="col" className="no-column">

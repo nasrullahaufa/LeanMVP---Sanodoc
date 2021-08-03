@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
 import ChangePasswordPage from "./pages/ChangePassword";
+import ProtectedRoute from "./helpers/protected.route";
 
 function App() {
   return (
@@ -12,12 +13,10 @@ function App() {
         <Route exact path="/login">
           <LoginPage />
         </Route>
-        <Route path="/changepassword">
-          <ChangePasswordPage />
-        </Route>
-        <Route path="/">
-          <HomePage />
-        </Route>
+        <ProtectedRoute path="/changepassword" component={ChangePasswordPage}  />
+        <ProtectedRoute path="/" component={HomePage} />
+     
+     
       </Switch>
     </Router>
   );
