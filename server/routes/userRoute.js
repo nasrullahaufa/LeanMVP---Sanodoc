@@ -5,10 +5,6 @@ const userController = require("../controllers/userController")
 
 
 router.post("/login", userController.login)
-// router.get("/:id", userController.viewProfile)
 
-// router.use(authenticate)
-
-// router.put("/", userController.updateUser)
 
 module.exports = router

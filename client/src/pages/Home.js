@@ -1,30 +1,44 @@
 import Navbar from "../components/Navbar";
-import React, { useState } from "react";
+import React, {useEffect, useState,useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { uploadAction, getDocumentsAction } from "../store/action";
+import generateQR from "../helpers/qrious";
+
 function HomePage() {
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
-  const loading = useSelector((state) => state.loading);
+  const documents = useSelector((state) => state.documents);
+
+  const tes = useSelector((state) => state.tes);
+  const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    if(documents.length == 0){
+      dispatch(getDocumentsAction())
+    }
+}, [documents]);
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-  const tes = useSelector((state) => state.tes);
-  const dispatch = useDispatch();
   const uploadHandle = (event) => {
-      event.preventDefault();
-      console.log(selectedFile)
+    event.preventDefault();
+    // console.log(selectedFile);
+    dispatch(uploadAction(selectedFile));
+    
   };
   return (
     <>
       <Navbar />
 
       <div className="table-container">
-        <div classname="Row">
+        <div className="Row">
           <input
-            classname="Column"
+            className="Column"
             type="file"
             name="file"
             accept=".pdf"
+            id="myFile"
             onChange={changeHandler}
           />
           <button
@@ -34,9 +48,8 @@ function HomePage() {
             Upload PDF
           </button>
         </div>
-   
 
-        <table classname="table table-bordered">
+        <table className="table table-bordered">
           <thead>
             <tr>
               <th scope="col" className="no-column">
@@ -52,6 +65,23 @@ function HomePage() {
             </tr>
           </thead>
           <tbody>
+            {documents.map((doc,i)=>{
+              return(
+               <tr key={i}>
+               <th className="no-column">{doc.id}</th>
+               <td className="qr-image-column">
+                 <img
+                   className="qr-image"
+                   src={generateQR(doc.url)}
+                 ></img>
+               </td>
+               <td>{doc.name}</td>
+               <td className="action-column">
+                 <button className="btn btn-primary"> Download </button>
+               </td>
+             </tr>
+              )
+            })}
             <tr>
               <th className="no-column">1</th>
               <td className="qr-image-column">
@@ -104,7 +134,6 @@ function HomePage() {
                 <button className="btn btn-primary"> Download </button>
               </td>
             </tr>
-   
           </tbody>
         </table>
       </div>

@@ -29,11 +29,11 @@
 
   padding: 3vw;
 }
-.qr-image {
-  width: 100px;
-  height: 100px;
+/* .qr-image {
+  width: 100px !important;
+  height: 100px !important;
   
-}
+} */
 .upload-button{
   margin-bottom:2vh
 }
