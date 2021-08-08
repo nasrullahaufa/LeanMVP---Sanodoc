@@ -40,6 +40,15 @@ export function setLogin(payload) {
   console.log('masuk set login')
   return { type: "SET_LOGIN", payload };
 }
+export function setIsDataFetched(payload) {
+  return { type: "SET_IS_DATA_FETCHED", payload };
+}
+export function setPageAction(payload) {
+  return { type: "SET_CURRENT_PAGE", payload };
+}
+export function setSearchKeyword(payload) {
+  return { type: "SET_KEYWORD", payload };
+}
 
 export function setDocuments(payload) {
   console.log('set doc')
@@ -54,6 +63,9 @@ export function uploadAction(payload) {
     fetch(server + "/documents", {
       method: "POST",
       body: formData,
+      headers:{
+        access_token: JSON.parse(localStorage.getItem("access_token"))
+      }
     })
       .then((response) => {
         return response.json();
@@ -67,7 +79,7 @@ export function uploadAction(payload) {
         } else {
           console.log(result, "result");
           document.getElementById("myFile").value = "";
-          dispatch(setDocuments([]))
+          dispatch(setIsDataFetched(false))
         }
       })
       .catch((error) => {
@@ -81,6 +93,9 @@ export function getDocumentsAction() {
     console.log('masuk')
     fetch(server + "/documents", {
       method: "GET",
+      headers:{
+        access_token: JSON.parse(localStorage.getItem("access_token"))
+      }
     })
       .then((response) => {
         return response.json();
@@ -98,6 +113,67 @@ export function getDocumentsAction() {
       })
       .catch((error) => {
         console.log(error);
+      });
+  };
+}
+export function downloadAction(doc) {
+  return function (dispatch) {
+    console.log('masuk')
+    axios({
+      url: `http://localhost:3001/documents/${doc.id}`,
+      method: 'GET',
+      headers:{
+        access_token: JSON.parse(localStorage.getItem("access_token"))
+      },
+      responseType: 'blob', // important
+    }).then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', doc.name);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    });
+  };
+}
+
+export function changePasswordAction(payload,callback) {
+  return function (dispatch) {
+
+    // callback('halo','res')
+    console.log(payload,'action');
+    fetch(server + "/user/changepassword", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        access_token: JSON.parse(localStorage.getItem("access_token"))
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((result) => {
+        if (result.error) {
+          Toast.fire({
+            icon: "warning",
+            title: result.error,
+          });
+          callback(result.error,null)
+        } else {
+          console.log(result);
+          Toast.fire({
+            icon: "success",
+            title: "Change Password Success",
+          });
+          callback(null,result)
+
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        callback(error,null)
       });
   };
 }

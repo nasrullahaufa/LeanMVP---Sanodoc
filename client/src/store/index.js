@@ -2,9 +2,11 @@ import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 
 const intialState = {
-  tes: "ini tes",
+  isDataFetched: false,
   isLogin: false,
-  documents:[]
+  documents: [],
+  currentPage: 1,
+  searchKeyword: "",
 };
 
 function reducer(state = intialState, action) {
@@ -14,6 +16,12 @@ function reducer(state = intialState, action) {
       return { ...state, isLogin: payload };
     case "SET_DOCUMENTS":
       return { ...state, documents: payload };
+    case "SET_IS_DATA_FETCHED":
+      return { ...state, isDataFetched: payload };
+    case "SET_CURRENT_PAGE":
+      return { ...state, currentPage: payload };
+    case "SET_KEYWORD":
+      return { ...state, searchKeyword: payload };
 
     default:
       return state;

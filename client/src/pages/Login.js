@@ -9,8 +9,8 @@ function LoginPage() {
   const [login, setLogin] = useState({ username: "", password: "" });
   const checkStatus = useSelector((state) => state.isLogin);
   useEffect(() => {
-      console.log(localStorage.getItem('access_token'));
-    if (checkStatus || localStorage.getItem('access_token')) {
+    console.log(localStorage.getItem("access_token"));
+    if (checkStatus || localStorage.getItem("access_token")) {
       history.push("/");
     } else {
       history.push("/login");
@@ -36,7 +36,7 @@ function LoginPage() {
       <div className="login-form-container">
         <div className="login-form">
           <form>
-            <h2>Login{localStorage.getItem('access_token')}</h2>
+            <h2>Login{localStorage.getItem("access_token")}</h2>
             <div className="mb-3">
               <label for="exampleInputEmail1" className="form-label">
                 Username

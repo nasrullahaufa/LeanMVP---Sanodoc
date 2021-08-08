@@ -1,23 +1,35 @@
 import Navbar from "../components/Navbar";
-import React, {useEffect, useState,useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadAction, getDocumentsAction } from "../store/action";
-import generateQR from "../helpers/qrious";
+import {
+  uploadAction,
+  getDocumentsAction,
+  downloadAction,
+  setIsDataFetched,
+} from "../store/action";
+import generateQR from "../helpers/qrcode";
+import Pagination from "../components/Pagination";
+import QRCode from "qrcode";
+import axios from "axios";
 
 function HomePage() {
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
   const documents = useSelector((state) => state.documents);
+  const isDataFetched = useSelector((state) => state.isDataFetched);
+  const currentPage = useSelector((state) => state.currentPage);
+  const searchKeyword = useSelector((state) => state.searchKeyword);
+  console.log(searchKeyword == true);
 
   const tes = useSelector((state) => state.tes);
   const dispatch = useDispatch();
 
-
   useEffect(() => {
-    if(documents.length == 0){
-      dispatch(getDocumentsAction())
+    if (isDataFetched == false) {
+      dispatch(getDocumentsAction());
+      dispatch(setIsDataFetched(true));
     }
-}, [documents]);
+  }, [documents, isDataFetched]);
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -25,7 +37,11 @@ function HomePage() {
     event.preventDefault();
     // console.log(selectedFile);
     dispatch(uploadAction(selectedFile));
-    
+  };
+  const downloadHandle = (event, doc) => {
+    event.preventDefault();
+    console.log(doc);
+    dispatch(downloadAction(doc));
   };
   return (
     <>
@@ -65,78 +81,65 @@ function HomePage() {
             </tr>
           </thead>
           <tbody>
-            {documents.map((doc,i)=>{
-              return(
-               <tr key={i}>
-               <th className="no-column">{doc.id}</th>
-               <td className="qr-image-column">
-                 <img
-                   className="qr-image"
-                   src={generateQR(doc.url)}
-                 ></img>
-               </td>
-               <td>{doc.name}</td>
-               <td className="action-column">
-                 <button className="btn btn-primary"> Download </button>
-               </td>
-             </tr>
-              )
-            })}
-            <tr>
-              <th className="no-column">1</th>
-              <td className="qr-image-column">
-                <img
-                  className="qr-image"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png"
-                ></img>
-              </td>
-              <td>pdf link</td>
-              <td className="action-column">
-                <button className="btn btn-primary"> Download </button>
-              </td>
-            </tr>
-            <tr>
-              <th className="no-column">1</th>
-              <td className="qr-image-column">
-                <img
-                  className="qr-image"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png"
-                ></img>
-              </td>
-              <td>pdf link</td>
-              <td className="action-column">
-                <button className="btn btn-primary"> Download </button>
-              </td>
-            </tr>
-            <tr>
-              <th className="no-column">1</th>
-              <td className="qr-image-column">
-                <img
-                  className="qr-image"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png"
-                ></img>
-              </td>
-              <td>pdf link</td>
-              <td className="action-column">
-                <button className="btn btn-primary"> Download </button>
-              </td>
-            </tr>
-            <tr>
-              <th className="no-column">1</th>
-              <td className="qr-image-column">
-                <img
-                  className="qr-image"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png"
-                ></img>
-              </td>
-              <td>pdf link</td>
-              <td className="action-column">
-                <button className="btn btn-primary"> Download </button>
-              </td>
-            </tr>
+            {!searchKeyword
+              ? documents.map((doc, i) => {
+                  if (
+                    i + 1 > currentPage * 10 - 10 &&
+                    i + 1 <= currentPage * 10
+                  )
+                    return (
+                      <tr key={i}>
+                        <th className="no-column">{i + 1}</th>
+                        <td className="qr-image-column">
+                          <img
+                            className="qr-image"
+                            src={generateQR(doc.url)}
+                          ></img>
+                        </td>
+                        <td>{doc.name}</td>
+                        <td className="action-column">
+                          <button
+                            className="btn btn-primary"
+                            onClick={(e) => downloadHandle(e, doc)}
+                          >
+                            {" "}
+                            Download{" "}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                })
+              : documents.map((doc, i) => {
+                  if (
+                    doc.name.toLowerCase().includes(searchKeyword.toLowerCase())
+                  ) {
+                    return (
+                      <tr key={i}>
+                        <th className="no-column">{i + 1}</th>
+                        <td className="qr-image-column">
+                          <img
+                            className="qr-image"
+                            src={generateQR(doc.url)}
+                          ></img>
+                        </td>
+                        <td>{doc.name}</td>
+                        <td className="action-column">
+                          <button
+                            className="btn btn-primary"
+                            onClick={(e) => downloadHandle(e, doc)}
+                          >
+                            {" "}
+                            Download{" "}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  }
+                })}
           </tbody>
         </table>
       </div>
+      {!searchKeyword ? <Pagination /> : null}
     </>
   );
 }

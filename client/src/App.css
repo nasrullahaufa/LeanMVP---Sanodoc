@@ -28,18 +28,20 @@
 .table-container {
 
   padding: 3vw;
+  padding-bottom:0.8vh;
 }
-/* .qr-image {
+.qr-image {
   width: 100px !important;
   height: 100px !important;
   
-} */
+}
 .upload-button{
   margin-bottom:2vh
 }
 .action-column{
   width:10vw;
   text-align: center;
+  vertical-align: middle;
 }
 .no-column{
   width: 3vw;
@@ -73,7 +75,9 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-
+.search-navbar{
+  margin-right: 8vw;
+}
 .App-link {
   color: #61dafb;
 }
@@ -96,9 +100,21 @@
   display: grid;
   justify-content: center;
   align-items: center;
-  margin-top: 150px;
+  margin-top: 100px;
 }
 input[type="file"] {
   width: calc(99% - (80px + 50px));
+}
+.pagination-button {
+
+  color: #337ab7;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+
+}
+
+.pagination-form{
+  width:6vw !important
 }
 
