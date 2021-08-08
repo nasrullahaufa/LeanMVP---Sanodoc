@@ -7,6 +7,12 @@ function errorHandler(err, req, res, next){
             
             res.status(400).json({ error: err.message})
             break;
+        case 'JsonWebTokenError':
+            res.status(401).json({error:"You are not authorized to perform this action"})
+            break
+        case 'PASSLENGTH':
+            res.status(400).json({error:"Password length at least 6 characters"})
+            break
      
 
         default:
